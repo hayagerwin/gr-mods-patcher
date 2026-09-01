@@ -1,0 +1,6 @@
+# Grain Rot Mod Patcher - Deletion List
+# Specify relative paths from game root to remove before extracting new patches.
+# Lines starting with # are comments.
+
+# Legacy / Old UE4SS or mod paths if any
+# Helden/Binaries/Win64/Mods/OldModName

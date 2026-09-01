@@ -1,0 +1,40 @@
+Grain Rot Mod Patch Info
+Generated: 2026-09-01 09:22:47
+Total files: 34
+
+Files included in patch.zip:
+============================================================
+ - Helden/Binaries/Win64/Mods/BPML_GenericFunctions/Scripts/main.lua
+ - Helden/Binaries/Win64/Mods/BPModLoaderMod/Scripts/main.lua
+ - Helden/Binaries/Win64/Mods/BPModLoaderMod/load_order.txt
+ - Helden/Binaries/Win64/Mods/CheatManagerEnablerMod/Scripts/main.lua
+ - Helden/Binaries/Win64/Mods/ConsoleCommandsMod/Scripts/dump_object.lua
+ - Helden/Binaries/Win64/Mods/ConsoleCommandsMod/Scripts/main.lua
+ - Helden/Binaries/Win64/Mods/ConsoleCommandsMod/Scripts/set.lua
+ - Helden/Binaries/Win64/Mods/ConsoleCommandsMod/Scripts/summon_unloaded_assets.lua
+ - Helden/Binaries/Win64/Mods/ConsoleEnablerMod/Scripts/main.lua
+ - Helden/Binaries/Win64/Mods/Keybinds/Scripts/main.lua
+ - Helden/Binaries/Win64/Mods/Konologic-GrainRotTogether/CHANGELOG.md
+ - Helden/Binaries/Win64/Mods/Konologic-GrainRotTogether/LICENSE
+ - Helden/Binaries/Win64/Mods/Konologic-GrainRotTogether/README.md
+ - Helden/Binaries/Win64/Mods/Konologic-GrainRotTogether/config.ini
+ - Helden/Binaries/Win64/Mods/Konologic-GrainRotTogether/enabled.txt
+ - Helden/Binaries/Win64/Mods/Konologic-GrainRotTogether/icon.png
+ - Helden/Binaries/Win64/Mods/Konologic-GrainRotTogether/manifest.json
+ - Helden/Binaries/Win64/Mods/Konologic-GrainRotTogether/scripts/main.lua
+ - Helden/Binaries/Win64/Mods/LineTraceMod/Scripts/main.lua
+ - Helden/Binaries/Win64/Mods/SplitScreenMod/Scripts/main.lua
+ - Helden/Binaries/Win64/Mods/Thunderstore-GrainRot_UE4SS/CHANGELOG.md
+ - Helden/Binaries/Win64/Mods/Thunderstore-GrainRot_UE4SS/README.md
+ - Helden/Binaries/Win64/Mods/Thunderstore-GrainRot_UE4SS/icon.png
+ - Helden/Binaries/Win64/Mods/Thunderstore-GrainRot_UE4SS/manifest.json
+ - Helden/Binaries/Win64/Mods/mods.json
+ - Helden/Binaries/Win64/Mods/mods.txt
+ - Helden/Binaries/Win64/Mods/shared/UEHelpers/UEHelpers.lua
+ - Helden/Binaries/Win64/UE4SS-settings.ini
+ - Helden/Binaries/Win64/UE4SS_Signatures/FName_Constructor.lua
+ - Helden/Binaries/Win64/UE4SS_Signatures/GNatives.lua
+ - Helden/Binaries/Win64/UE4SS_Signatures/GUObjectHashTables.lua
+ - Helden/Binaries/Win64/UE4SS_Signatures/StaticConstructObject.lua
+ - Helden/Binaries/Win64/dwmapi.dll
+ - Helden/Binaries/Win64/ue4ss.dll
