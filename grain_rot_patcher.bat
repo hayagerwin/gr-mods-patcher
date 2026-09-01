@@ -99,14 +99,18 @@ if exist "%CONFIG_FILE%" (
     if defined SAVED_P (
         set "SAVED_P=!SAVED_P:"=!"
         if exist "!SAVED_P!\Helden.exe" (
-            set "FOUND_DIR_!SAVED_P!=1"
+            set "KEY_PATH=!SAVED_P:(=_!"
+            set "KEY_PATH=!KEY_PATH:)=_!"
+            set "FOUND_DIR_!KEY_PATH!=1"
             set /a COUNT+=1
             for %%K in (!COUNT!) do (
                 set "CANDIDATE_%%K=!SAVED_P!"
                 set "LABEL_%%K=Saved Location"
             )
         ) else if exist "!SAVED_P!\Helden\Binaries\Win64\Helden-Win64-Shipping.exe" (
-            set "FOUND_DIR_!SAVED_P!=1"
+            set "KEY_PATH=!SAVED_P:(=_!"
+            set "KEY_PATH=!KEY_PATH:)=_!"
+            set "FOUND_DIR_!KEY_PATH!=1"
             set /a COUNT+=1
             for %%K in (!COUNT!) do (
                 set "CANDIDATE_%%K=!SAVED_P!"
@@ -127,21 +131,24 @@ for %%V in (C D E F G H) do (
             "%%V:\Program Files (x86)\Steam\steamapps\common\Grain Rot"
             "%%V:\Program Files\Steam\steamapps\common\Grain Rot"
         ) do (
-            if exist "%%~P\Helden.exe" (
-                if not defined FOUND_DIR_%%~P (
-                    set "FOUND_DIR_%%~P=1"
+            set "TARGET_P=%%~P"
+            set "KEY_P=!TARGET_P:(=_!"
+            set "KEY_P=!KEY_P:)=_!"
+            if exist "!TARGET_P!\Helden.exe" (
+                if not defined FOUND_DIR_!KEY_P! (
+                    set "FOUND_DIR_!KEY_P!=1"
                     set /a COUNT+=1
                     for %%K in (!COUNT!) do (
-                        set "CANDIDATE_%%K=%%~P"
+                        set "CANDIDATE_%%K=!TARGET_P!"
                         set "LABEL_%%K=Installed Path"
                     )
                 )
-            ) else if exist "%%~P\Helden\Binaries\Win64\Helden-Win64-Shipping.exe" (
-                if not defined FOUND_DIR_%%~P (
-                    set "FOUND_DIR_%%~P=1"
+            ) else if exist "!TARGET_P!\Helden\Binaries\Win64\Helden-Win64-Shipping.exe" (
+                if not defined FOUND_DIR_!KEY_P! (
+                    set "FOUND_DIR_!KEY_P!=1"
                     set /a COUNT+=1
                     for %%K in (!COUNT!) do (
-                        set "CANDIDATE_%%K=%%~P"
+                        set "CANDIDATE_%%K=!TARGET_P!"
                         set "LABEL_%%K=Installed Path"
                     )
                 )
@@ -149,21 +156,24 @@ for %%V in (C D E F G H) do (
         )
         if exist "%%V:\Games\" (
             for /d %%D in ("%%V:\Games\*Grain*" "%%V:\Games\Grain*") do (
-                if exist "%%~fD\Helden.exe" (
-                    if not defined FOUND_DIR_%%~fD (
-                        set "FOUND_DIR_%%~fD=1"
+                set "TARGET_D=%%~fD"
+                set "KEY_D=!TARGET_D:(=_!"
+                set "KEY_D=!KEY_D:)=_!"
+                if exist "!TARGET_D!\Helden.exe" (
+                    if not defined FOUND_DIR_!KEY_D! (
+                        set "FOUND_DIR_!KEY_D!=1"
                         set /a COUNT+=1
                         for %%K in (!COUNT!) do (
-                            set "CANDIDATE_%%K=%%~fD"
+                            set "CANDIDATE_%%K=!TARGET_D!"
                             set "LABEL_%%K=Found on %%V:\Games"
                         )
                     )
-                ) else if exist "%%~fD\Helden\Binaries\Win64\Helden-Win64-Shipping.exe" (
-                    if not defined FOUND_DIR_%%~fD (
-                        set "FOUND_DIR_%%~fD=1"
+                ) else if exist "!TARGET_D!\Helden\Binaries\Win64\Helden-Win64-Shipping.exe" (
+                    if not defined FOUND_DIR_!KEY_D! (
+                        set "FOUND_DIR_!KEY_D!=1"
                         set /a COUNT+=1
                         for %%K in (!COUNT!) do (
-                            set "CANDIDATE_%%K=%%~fD"
+                            set "CANDIDATE_%%K=!TARGET_D!"
                             set "LABEL_%%K=Found on %%V:\Games"
                         )
                     )
@@ -177,23 +187,29 @@ REM Scan User Directories (Downloads, Desktop, Documents)
 for %%B in ("%USERPROFILE%\Downloads" "%USERPROFILE%\Desktop" "%USERPROFILE%\Documents") do (
     if exist "%%~B\" (
         for /d %%D in ("%%~B\*Grain*" "%%~B\Grain*") do (
-            if exist "%%~fD\Helden.exe" (
-                if not defined FOUND_DIR_%%~fD (
-                    set "FOUND_DIR_%%~fD=1"
+            set "TARGET_U=%%~fD"
+            set "KEY_U=!TARGET_U:(=_!"
+            set "KEY_U=!KEY_U:)=_!"
+            if exist "!TARGET_U!\Helden.exe" (
+                if not defined FOUND_DIR_!KEY_U! (
+                    set "FOUND_DIR_!KEY_U!=1"
                     set /a COUNT+=1
                     for %%K in (!COUNT!) do (
-                        set "CANDIDATE_%%K=%%~fD"
+                        set "CANDIDATE_%%K=!TARGET_U!"
                         set "LABEL_%%K=Found in %%~nB"
                     )
                 )
             )
             for /d %%S in ("%%~fD\*") do (
-                if exist "%%~fS\Helden.exe" (
-                    if not defined FOUND_DIR_%%~fS (
-                        set "FOUND_DIR_%%~fS=1"
+                set "TARGET_S=%%~fS"
+                set "KEY_S=!TARGET_S:(=_!"
+                set "KEY_S=!KEY_S:)=_!"
+                if exist "!TARGET_S!\Helden.exe" (
+                    if not defined FOUND_DIR_!KEY_S! (
+                        set "FOUND_DIR_!KEY_S!=1"
                         set /a COUNT+=1
                         for %%K in (!COUNT!) do (
-                            set "CANDIDATE_%%K=%%~fS"
+                            set "CANDIDATE_%%K=!TARGET_S!"
                             set "LABEL_%%K=Found in %%~nB"
                         )
                     )
@@ -205,9 +221,10 @@ for %%B in ("%USERPROFILE%\Downloads" "%USERPROFILE%\Desktop" "%USERPROFILE%\Doc
 
 if %COUNT% equ 1 (
     echo %C_CYAN%[2/2]%C_RESET% Auto-detected Grain Rot directory:
-    echo      %C_GREEN%!CANDIDATE_1!%C_RESET% %C_GRAY%(!LABEL_1!)%C_RESET%
+    echo      %C_GREEN%!CANDIDATE_1!%C_RESET% %C_GRAY%^(!LABEL_1!^)%C_RESET%
     echo.
     echo Press %C_WHITE%[ENTER]%C_RESET% to proceed with this folder, or %C_YELLOW%[C]%C_RESET% to choose another:
+    set "USER_CHOICE="
     set /p "USER_CHOICE=> "
     if /i "!USER_CHOICE!"=="C" (
         goto :manual_picker
@@ -219,10 +236,11 @@ if %COUNT% equ 1 (
 if %COUNT% gtr 1 (
     echo %C_CYAN%[2/2]%C_RESET% Found multiple Grain Rot installations:
     for /l %%I in (1,1,%COUNT%) do (
-        echo      %C_WHITE%[%%I]%C_RESET% !CANDIDATE_%%I! %C_GRAY%(!LABEL_%%I!)%C_RESET%
+        echo      %C_WHITE%[%%I]%C_RESET% !CANDIDATE_%%I! %C_GRAY%^(!LABEL_%%I!^)%C_RESET%
     )
     echo.
     echo Select an installation %C_WHITE%[1-%COUNT%]%C_RESET% or press %C_YELLOW%[B]%C_RESET% to browse folder:
+    set "USER_CHOICE="
     set /p "USER_CHOICE=> "
     if /i "!USER_CHOICE!"=="B" (
         goto :manual_picker
