@@ -294,6 +294,22 @@ def download_with_progress(url: str, output_path: Path):
                 sys.stdout.flush()
         print()
 
+def check_game_running():
+    while True:
+        try:
+            res = subprocess.run(["tasklist"], capture_output=True, text=True)
+            if "helden-win64-shipping.exe" in res.stdout.lower() or "helden.exe" in res.stdout.lower():
+                print(f"\n{Style.YELLOW}[WARNING] Grain Rot is currently running!{Style.RESET}")
+                print("Mod files cannot be updated while the game is open.")
+                choice = input(f"Please close Grain Rot, then press {Style.BOLD}[ENTER]{Style.RESET} to retry (or {Style.RED}[K]{Style.RESET} to force close): ").strip().lower()
+                if choice == "k":
+                    subprocess.run(["taskkill", "/f", "/im", "Helden-Win64-Shipping.exe"], capture_output=True)
+                    subprocess.run(["taskkill", "/f", "/im", "Helden.exe"], capture_output=True)
+                continue
+        except Exception:
+            pass
+        break
+
 def main():
     log_header("Grain Rot Mod Patcher")
     script_url = f"https://raw.githubusercontent.com/{REPO_USER}/{REPO_NAME}/{BRANCH}/grain_rot_patcher.py"
@@ -347,6 +363,7 @@ def main():
             sys.exit(1)
 
     # Stage 3: Extraction
+    check_game_running()
     log_step("3/3", "Extracting mod files to game directory...")
     try:
         with zipfile.ZipFile(patch_zip, "r") as z:

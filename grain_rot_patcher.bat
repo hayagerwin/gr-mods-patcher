@@ -403,6 +403,34 @@ echo.
 REM ----------------------------------------------------------------------------
 REM 5. EXTRACTION STAGE
 REM ----------------------------------------------------------------------------
+:check_game_running
+tasklist /fi "imagename eq Helden-Win64-Shipping.exe" 2>nul | findstr /i "Helden-Win64-Shipping.exe" >nul
+if not errorlevel 1 (
+    echo.
+    echo %C_YELLOW%[WARNING] Grain Rot is currently running!%C_RESET%
+    echo Mod files cannot be updated while the game is open.
+    echo Please close Grain Rot, then press %C_WHITE%[ENTER]%C_RESET% to continue (or %C_RED%[K]%C_RESET% to force close):
+    set /p "CLOSE_CHOICE=> "
+    if /i "!CLOSE_CHOICE!"=="K" (
+        taskkill /f /im Helden-Win64-Shipping.exe >nul 2>nul
+        taskkill /f /im Helden.exe >nul 2>nul
+        timeout /t 1 /nobreak >nul
+    )
+    goto :check_game_running
+)
+tasklist /fi "imagename eq Helden.exe" 2>nul | findstr /i "Helden.exe" >nul
+if not errorlevel 1 (
+    echo.
+    echo %C_YELLOW%[WARNING] Grain Rot is currently running!%C_RESET%
+    echo Please close Grain Rot, then press %C_WHITE%[ENTER]%C_RESET% to continue (or %C_RED%[K]%C_RESET% to force close):
+    set /p "CLOSE_CHOICE=> "
+    if /i "!CLOSE_CHOICE!"=="K" (
+        taskkill /f /im Helden.exe >nul 2>nul
+        timeout /t 1 /nobreak >nul
+    )
+    goto :check_game_running
+)
+
 echo %C_CYAN%[3/3]%C_RESET% Extracting and applying mod files to game...
 tar.exe -xf "!PATCH_ZIP!" -C "!GAME_DIR!"
 if errorlevel 1 (
