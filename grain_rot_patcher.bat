@@ -373,8 +373,10 @@ echo %C_CYAN%[2/3]%C_RESET% Downloading latest mod patch from GitHub...
 set "PATCH_ZIP=%TEMP%\gr_patch_%RANDOM%.zip"
 set "DOWNLOAD_URL=https://raw.githubusercontent.com/%REPO_USER%/%REPO_NAME%/%BRANCH%/patch.zip"
 
-REM Check local patch.zip fallback if running from local repo
-if exist "%SCRIPT_DIR%patch.zip" if not exist "%SCRIPT_DIR%.git" (
+set "USE_LOCAL_PATCH=0"
+if exist "%SCRIPT_DIR%patch.zip" if not exist "%SCRIPT_DIR%.git" set "USE_LOCAL_PATCH=1"
+
+if "!USE_LOCAL_PATCH!"=="1" (
     copy /y "%SCRIPT_DIR%patch.zip" "!PATCH_ZIP!" >nul
     echo      %C_GREEN%[OK]%C_RESET% Using local patch archive.
 ) else (
