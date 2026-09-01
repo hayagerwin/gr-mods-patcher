@@ -45,11 +45,12 @@ if not defined _GR_PATCHER_SELF_UPDATED (
         curl.exe -s -m 5 -L -f "!SCRIPT_URL!" -o "!TEMP_SCRIPT!" 2>nul
         if exist "!TEMP_SCRIPT!" (
             set "REMOTE_VERSION="
-            for /f "tokens=2 delims==" %%V in ('findstr /i /c:"set \"PATCHER_VERSION=" "!TEMP_SCRIPT!" 2^>nul') do (
+            for /f "tokens=2 delims==" %%V in ('findstr /r /c:"^set .PATCHER_VERSION=" "!TEMP_SCRIPT!" 2^>nul') do (
                 set "REMOTE_VERSION=%%~V"
             )
             if defined REMOTE_VERSION (
                 set "REMOTE_VERSION=!REMOTE_VERSION:"=!"
+                set "REMOTE_VERSION=!REMOTE_VERSION: =!"
                 if not "!REMOTE_VERSION!"=="!PATCHER_VERSION!" (
                     echo      %C_YELLOW%[UPDATE AVAILABLE]%C_RESET% Found newer build !REMOTE_VERSION! ^(Current: !PATCHER_VERSION!^)
                     echo      %C_CYAN%[+] Upgrading patcher script...%C_RESET%
@@ -57,10 +58,8 @@ if not defined _GR_PATCHER_SELF_UPDATED (
                     del /f /q "!TEMP_SCRIPT!" 2>nul
                     set "_GR_PATCHER_SELF_UPDATED=1"
                     echo      %C_GREEN%[UPDATED]%C_RESET% Script updated to build !REMOTE_VERSION!.
-                    set "PATCHER_STATUS_TEXT=%C_GREEN%[JUST UPDATED] (Successfully updated to Build !REMOTE_VERSION!)%C_RESET%"
                 ) else (
                     echo      %C_GREEN%[UP TO DATE]%C_RESET% Running latest build !PATCHER_VERSION! ^(No update needed^)
-                    set "PATCHER_STATUS_TEXT=%C_GREEN%[UP TO DATE] (Build !PATCHER_VERSION! - Synced with GitHub)%C_RESET%"
                     del /f /q "!TEMP_SCRIPT!" 2>nul
                 )
             ) else (
@@ -68,11 +67,8 @@ if not defined _GR_PATCHER_SELF_UPDATED (
             )
         ) else (
             echo      %C_GRAY%[OFFLINE / LOCAL]%C_RESET% Running local build !PATCHER_VERSION!
-            set "PATCHER_STATUS_TEXT=%C_GRAY%[OFFLINE / LOCAL] (Build !PATCHER_VERSION!)%C_RESET%"
         )
         echo.
-    ) else (
-        set "PATCHER_STATUS_TEXT=%C_CYAN%[DEV MODE] (Build !PATCHER_VERSION! - Git Working Copy)%C_RESET%"
     )
 )
 
@@ -387,27 +383,21 @@ REM ----------------------------------------------------------------------------
 REM 5. EXTRACTION STAGE
 REM ----------------------------------------------------------------------------
 :check_game_running
+set "GAME_IS_RUNNING=0"
 tasklist /fi "imagename eq Helden-Win64-Shipping.exe" 2>nul | findstr /i "Helden-Win64-Shipping.exe" >nul
-if not errorlevel 1 (
+if not errorlevel 1 set "GAME_IS_RUNNING=1"
+tasklist /fi "imagename eq Helden.exe" 2>nul | findstr /i "Helden.exe" >nul
+if not errorlevel 1 set "GAME_IS_RUNNING=1"
+
+if "!GAME_IS_RUNNING!"=="1" (
     echo.
     echo %C_YELLOW%[WARNING] Grain Rot is currently running!%C_RESET%
     echo Mod files cannot be updated while the game is open.
-    echo Please close Grain Rot, then press %C_WHITE%[ENTER]%C_RESET% to continue (or %C_RED%[K]%C_RESET% to force close):
+    echo Please close Grain Rot, then press %C_WHITE%[ENTER]%C_RESET% to continue ^(or %C_RED%[K]%C_RESET% to force close^):
+    set "CLOSE_CHOICE="
     set /p "CLOSE_CHOICE=> "
     if /i "!CLOSE_CHOICE!"=="K" (
         taskkill /f /im Helden-Win64-Shipping.exe >nul 2>nul
-        taskkill /f /im Helden.exe >nul 2>nul
-        timeout /t 1 /nobreak >nul
-    )
-    goto :check_game_running
-)
-tasklist /fi "imagename eq Helden.exe" 2>nul | findstr /i "Helden.exe" >nul
-if not errorlevel 1 (
-    echo.
-    echo %C_YELLOW%[WARNING] Grain Rot is currently running!%C_RESET%
-    echo Please close Grain Rot, then press %C_WHITE%[ENTER]%C_RESET% to continue (or %C_RED%[K]%C_RESET% to force close):
-    set /p "CLOSE_CHOICE=> "
-    if /i "!CLOSE_CHOICE!"=="K" (
         taskkill /f /im Helden.exe >nul 2>nul
         timeout /t 1 /nobreak >nul
     )
