@@ -45,38 +45,27 @@ if not defined _GR_PATCHER_SELF_UPDATED (
         curl.exe -s -m 5 -L -f "!SCRIPT_URL!" -o "!TEMP_SCRIPT!" 2>nul
         if exist "!TEMP_SCRIPT!" (
             set "REMOTE_VERSION="
-            for /f "usebackq delims=" %%V in (`powershell -NoProfile -Command "$txt = Get-Content '!TEMP_SCRIPT!'; foreach($l in $txt){ if($l -match 'PATCHER_VERSION=([0-9a-zA-Z_\.\-]+)') { Write-Output $matches[1]; break } }"`) do (
-                set "REMOTE_VERSION=%%V"
+            for /f "tokens=2 delims==" %%V in ('findstr /i /c:"set \"PATCHER_VERSION=" "!TEMP_SCRIPT!" 2^>nul') do (
+                set "REMOTE_VERSION=%%~V"
             )
             if defined REMOTE_VERSION (
-                set "NEEDS_UPDATE=0"
-                for /f "usebackq delims=" %%U in (`powershell -NoProfile -Command "if ('!REMOTE_VERSION!' -ne '!PATCHER_VERSION!') { Write-Output '1' } else { Write-Output '0' }"`) do (
-                    set "NEEDS_UPDATE=%%U"
-                )
-                if "!NEEDS_UPDATE!"=="1" (
+                set "REMOTE_VERSION=!REMOTE_VERSION:"=!"
+                if not "!REMOTE_VERSION!"=="!PATCHER_VERSION!" (
                     echo      %C_YELLOW%[UPDATE AVAILABLE]%C_RESET% Found newer build !REMOTE_VERSION! ^(Current: !PATCHER_VERSION!^)
                     echo      %C_CYAN%[+] Upgrading patcher script...%C_RESET%
-                    set "SPAWNER=%TEMP%\gr_updater_%RANDOM%.bat"
-                    (
-                        echo @echo off
-                        echo timeout /t 1 /nobreak ^>nul
-                        echo move /y "!TEMP_SCRIPT!" "%~f0" ^>nul
-                        echo set "_GR_PATCHER_SELF_UPDATED=1"
-                        echo set "_GR_PREV_VERSION=!PATCHER_VERSION!"
-                        echo start "" cmd.exe /c "%~f0" %*
-                        echo del "%%~f0" ^& exit
-                    ) > "!SPAWNER!"
-                    start "" cmd.exe /c "!SPAWNER!"
-                    exit /b 0
+                    copy /y "!TEMP_SCRIPT!" "%~f0" >nul 2>nul
+                    del /f /q "!TEMP_SCRIPT!" 2>nul
+                    set "_GR_PATCHER_SELF_UPDATED=1"
+                    echo      %C_GREEN%[UPDATED]%C_RESET% Script updated to build !REMOTE_VERSION!.
+                    set "PATCHER_STATUS_TEXT=%C_GREEN%[JUST UPDATED] (Successfully updated to Build !REMOTE_VERSION!)%C_RESET%"
                 ) else (
                     echo      %C_GREEN%[UP TO DATE]%C_RESET% Running latest build !PATCHER_VERSION! ^(No update needed^)
                     set "PATCHER_STATUS_TEXT=%C_GREEN%[UP TO DATE] (Build !PATCHER_VERSION! - Synced with GitHub)%C_RESET%"
+                    del /f /q "!TEMP_SCRIPT!" 2>nul
                 )
             ) else (
-                echo      %C_GREEN%[UP TO DATE]%C_RESET% Running build !PATCHER_VERSION!
-                set "PATCHER_STATUS_TEXT=%C_GREEN%[UP TO DATE] (Build !PATCHER_VERSION!)%C_RESET%"
+                del /f /q "!TEMP_SCRIPT!" 2>nul
             )
-            del /f /q "!TEMP_SCRIPT!" 2>nul
         ) else (
             echo      %C_GRAY%[OFFLINE / LOCAL]%C_RESET% Running local build !PATCHER_VERSION!
             set "PATCHER_STATUS_TEXT=%C_GRAY%[OFFLINE / LOCAL] (Build !PATCHER_VERSION!)%C_RESET%"
@@ -84,12 +73,6 @@ if not defined _GR_PATCHER_SELF_UPDATED (
         echo.
     ) else (
         set "PATCHER_STATUS_TEXT=%C_CYAN%[DEV MODE] (Build !PATCHER_VERSION! - Git Working Copy)%C_RESET%"
-    )
-) else (
-    if defined _GR_PREV_VERSION (
-        set "PATCHER_STATUS_TEXT=%C_GREEN%[JUST UPDATED] (Successfully upgraded from Build !_GR_PREV_VERSION! -> !PATCHER_VERSION!)%C_RESET%"
-    ) else (
-        set "PATCHER_STATUS_TEXT=%C_GREEN%[JUST UPDATED] (Successfully updated to Build !PATCHER_VERSION! from GitHub)%C_RESET%"
     )
 )
 
