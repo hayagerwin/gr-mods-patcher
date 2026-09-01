@@ -19,7 +19,7 @@ import urllib.error
 # Configure your GitHub username, repository name, and branch below.
 # ==============================================================================
 REPO_USER = "hayagerwin"
-REPO_NAME = "grain-rot-mods-patcher"
+REPO_NAME = "gr-mods-patcher"
 BRANCH = "main"
 PATCHER_VERSION = "20260901092247"
 

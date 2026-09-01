@@ -35,14 +35,14 @@ A standalone, lightweight synchronization toolchain for updating custom **Grain 
 Open `grain_rot_patcher.bat` and `grain_rot_patcher.py` and set your GitHub details:
 
 ```bat
-set "REPO_USER=YourGitHubUsername"
-set "REPO_NAME=grain-rot-mods-patcher"
+set "REPO_USER=hayagerwin"
+set "REPO_NAME=gr-mods-patcher"
 set "BRANCH=main"
 ```
 
 ```python
-REPO_USER = "YourGitHubUsername"
-REPO_NAME = "grain-rot-mods-patcher"
+REPO_USER = "hayagerwin"
+REPO_NAME = "gr-mods-patcher"
 BRANCH = "main"
 ```
 

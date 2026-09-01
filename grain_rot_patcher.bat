@@ -7,7 +7,7 @@ REM REPOSITORY CONFIGURATION
 REM Set your GitHub username, repository name, and branch below.
 REM ============================================================================
 set "REPO_USER=hayagerwin"
-set "REPO_NAME=grain-rot-mods-patcher"
+set "REPO_NAME=gr-mods-patcher"
 set "BRANCH=main"
 set "PATCHER_VERSION=20260901092247"
 
