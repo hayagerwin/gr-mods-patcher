@@ -32,11 +32,6 @@ echo                         Grain Rot Mod Patcher
 echo ============================================================================%C_RESET%
 echo.
 
-set "COMMIT_REF=%BRANCH%"
-for /f "usebackq delims=" %%S in (`powershell -NoProfile -Command "try { (Invoke-RestMethod -Uri 'https://api.github.com/repos/%REPO_USER%/%REPO_NAME%/commits/%BRANCH%' -Headers @{'User-Agent'='GrainRot-Mods-Patcher'} -TimeoutSec 3).sha } catch {}" 2^>nul`) do (
-    if not "%%S"=="" set "COMMIT_REF=%%S"
-)
-
 REM ----------------------------------------------------------------------------
 REM 0. SELF-UPDATE CHECK (Always executed FIRST before directory detection)
 REM ----------------------------------------------------------------------------
@@ -44,13 +39,10 @@ if not defined _GR_PATCHER_SELF_UPDATED (
     REM Don't overwrite if running inside git repo working directory
     if not exist "%SCRIPT_DIR%.git" (
         echo %C_CYAN%[1/2]%C_RESET% Checking for patcher script updates on GitHub...
-        set "SCRIPT_URL=https://raw.githubusercontent.com/%REPO_USER%/%REPO_NAME%/!COMMIT_REF!/grain_rot_patcher.bat"
+        set "SCRIPT_URL=https://raw.githubusercontent.com/%REPO_USER%/%REPO_NAME%/%BRANCH%/grain_rot_patcher.bat?t=%RANDOM%%RANDOM%"
         set "TEMP_SCRIPT=%TEMP%\gr_patcher_update_%RANDOM%.bat"
 
         curl.exe -s -m 5 -L -f -H "Cache-Control: no-cache" -H "Pragma: no-cache" "!SCRIPT_URL!" -o "!TEMP_SCRIPT!" 2>nul
-        if not exist "!TEMP_SCRIPT!" (
-            curl.exe -s -m 5 -L -f -H "Cache-Control: no-cache" -H "Pragma: no-cache" "https://raw.githubusercontent.com/%REPO_USER%/%REPO_NAME%/%BRANCH%/grain_rot_patcher.bat?t=%RANDOM%%RANDOM%" -o "!TEMP_SCRIPT!" 2>nul
-        )
         if exist "!TEMP_SCRIPT!" (
             set "REMOTE_VERSION="
             for /f "usebackq delims=" %%V in (`powershell -NoProfile -Command "$txt = Get-Content '!TEMP_SCRIPT!'; foreach($l in $txt){ if($l -match 'PATCHER_VERSION=([0-9a-zA-Z_\.\-]+)') { Write-Output $matches[1]; break } }"`) do (
@@ -343,7 +335,7 @@ REM 3. CLEANUP / DELETION STAGE
 REM ----------------------------------------------------------------------------
 echo %C_CYAN%[1/3]%C_RESET% Checking for outdated mods...
 set "TEMP_DELETE_LIST=%TEMP%\gr_delete_list_%RANDOM%.txt"
-set "DELETE_URL=https://raw.githubusercontent.com/%REPO_USER%/%REPO_NAME%/!COMMIT_REF!/delete_list.txt"
+set "DELETE_URL=https://raw.githubusercontent.com/%REPO_USER%/%REPO_NAME%/%BRANCH%/delete_list.txt?t=%RANDOM%"
 
 curl.exe -s -m 5 -L -f -H "Cache-Control: no-cache" -H "Pragma: no-cache" "!DELETE_URL!" -o "!TEMP_DELETE_LIST!" 2>nul
 if not exist "!TEMP_DELETE_LIST!" (
@@ -379,18 +371,17 @@ REM 4. DOWNLOAD STAGE
 REM ----------------------------------------------------------------------------
 echo %C_CYAN%[2/3]%C_RESET% Downloading latest mod patch from GitHub...
 set "PATCH_ZIP=%TEMP%\gr_patch_%RANDOM%.zip"
-set "DOWNLOAD_URL=https://raw.githubusercontent.com/%REPO_USER%/%REPO_NAME%/!COMMIT_REF!/patch.zip"
+set "DOWNLOAD_URL=https://raw.githubusercontent.com/%REPO_USER%/%REPO_NAME%/%BRANCH%/patch.zip?t=%RANDOM%"
 
 REM Check local patch.zip fallback if running from local repo
 if exist "%SCRIPT_DIR%patch.zip" if not exist "%SCRIPT_DIR%.git" (
     copy /y "%SCRIPT_DIR%patch.zip" "!PATCH_ZIP!" >nul
     echo      %C_GREEN%[OK]%C_RESET% Using local patch archive.
 ) else (
-    curl.exe -# -L -f -H "Cache-Control: no-cache" -H "Pragma: no-cache" "!DOWNLOAD_URL!" -o "!PATCH_ZIP!"
-    if errorlevel 1 (
-        echo.
-        echo      %C_YELLOW%[*] Retrying primary branch url...%C_RESET%
-        curl.exe -# -L -f -H "Cache-Control: no-cache" -H "Pragma: no-cache" "https://raw.githubusercontent.com/%REPO_USER%/%REPO_NAME%/%BRANCH%/patch.zip?t=%RANDOM%" -o "!PATCH_ZIP!"
+    curl.exe -L -f -H "Cache-Control: no-cache" -H "Pragma: no-cache" "!DOWNLOAD_URL!" -o "!PATCH_ZIP!" 2>nul
+    if not exist "!PATCH_ZIP!" (
+        echo      %C_YELLOW%[*] Retrying with system web client...%C_RESET%
+        powershell.exe -NoProfile -Command "try { Invoke-WebRequest -Uri '!DOWNLOAD_URL!' -OutFile '!PATCH_ZIP!' -UseBasicParsing } catch {}" 2>nul
     )
 )
 
