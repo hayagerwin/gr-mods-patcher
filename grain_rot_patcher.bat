@@ -42,7 +42,7 @@ if not defined _GR_PATCHER_SELF_UPDATED (
         set "SCRIPT_URL=https://raw.githubusercontent.com/%REPO_USER%/%REPO_NAME%/%BRANCH%/grain_rot_patcher.bat?t=%RANDOM%%RANDOM%"
         set "TEMP_SCRIPT=%TEMP%\gr_patcher_update_%RANDOM%.bat"
 
-        curl.exe -s -m 5 -L -f -H "Cache-Control: no-cache" -H "Pragma: no-cache" "!SCRIPT_URL!" -o "!TEMP_SCRIPT!" 2>nul
+        curl.exe -s -m 5 -L -f "!SCRIPT_URL!" -o "!TEMP_SCRIPT!" 2>nul
         if exist "!TEMP_SCRIPT!" (
             set "REMOTE_VERSION="
             for /f "usebackq delims=" %%V in (`powershell -NoProfile -Command "$txt = Get-Content '!TEMP_SCRIPT!'; foreach($l in $txt){ if($l -match 'PATCHER_VERSION=([0-9a-zA-Z_\.\-]+)') { Write-Output $matches[1]; break } }"`) do (
@@ -337,7 +337,7 @@ echo %C_CYAN%[1/3]%C_RESET% Checking for outdated mods...
 set "TEMP_DELETE_LIST=%TEMP%\gr_delete_list_%RANDOM%.txt"
 set "DELETE_URL=https://raw.githubusercontent.com/%REPO_USER%/%REPO_NAME%/%BRANCH%/delete_list.txt?t=%RANDOM%"
 
-curl.exe -s -m 5 -L -f -H "Cache-Control: no-cache" -H "Pragma: no-cache" "!DELETE_URL!" -o "!TEMP_DELETE_LIST!" 2>nul
+curl.exe -s -m 5 -L -f "!DELETE_URL!" -o "!TEMP_DELETE_LIST!" 2>nul
 if not exist "!TEMP_DELETE_LIST!" (
     if exist "%SCRIPT_DIR%delete_list.txt" (
         copy /y "%SCRIPT_DIR%delete_list.txt" "!TEMP_DELETE_LIST!" >nul 2>nul
@@ -378,10 +378,10 @@ if exist "%SCRIPT_DIR%patch.zip" if not exist "%SCRIPT_DIR%.git" (
     copy /y "%SCRIPT_DIR%patch.zip" "!PATCH_ZIP!" >nul
     echo      %C_GREEN%[OK]%C_RESET% Using local patch archive.
 ) else (
-    curl.exe -L -f -H "Cache-Control: no-cache" -H "Pragma: no-cache" "!DOWNLOAD_URL!" -o "!PATCH_ZIP!" 2>nul
+    curl.exe -# -L -f "!DOWNLOAD_URL!" -o "!PATCH_ZIP!"
     if not exist "!PATCH_ZIP!" (
         echo      %C_YELLOW%[*] Retrying with system web client...%C_RESET%
-        powershell.exe -NoProfile -Command "try { Invoke-WebRequest -Uri '!DOWNLOAD_URL!' -OutFile '!PATCH_ZIP!' -UseBasicParsing } catch {}" 2>nul
+        powershell.exe -NoProfile -Command "try { (New-Object System.Net.WebClient).DownloadFile('!DOWNLOAD_URL!', '!PATCH_ZIP!') } catch {}" 2>nul
     )
 )
 
